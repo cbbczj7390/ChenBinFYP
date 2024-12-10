@@ -1,4 +1,3 @@
-<!-- templates/similar_images.html -->
 <!DOCTYPE html>
 <html>
 <head>
@@ -7,21 +6,22 @@
 <body>
     <h1>Uploaded Picture</h1>
     <div>
-        <img src="{{ url_for('static', filename=uploaded_image.split('static/')[1]) }}" alt="Uploaded Image" style="width:200px;height:auto;">
+        <img src="{{ url_for('static', filename=uploaded_image.split('static/', 1)[-1]) }}" alt="Uploaded Image" style="width:200px;height:auto;">
         <p>{{ uploaded_image }}</p>
     </div>
     <h1>Similar Pictures</h1>
     <div>
-        {% for path in similar_images %}
-            <div>
-                {% if 'uploads/' in path %}
-                    <img src="{{ url_for('static', filename=path.split('static/')[1]) }}" alt="Image" style="width:200px;height:auto;">
-                {% else %}
-                    <img src="{{ url_for('static', filename=path) }}" alt="Image" style="width:200px;height:auto;">
-                {% endif %}
-                <p>{{ path }}</p>
-            </div>
-        {% endfor %}
+        {% if similar_images %}
+            {% for path, similarity in similar_images %}
+                <div>
+                    <img src="{{ url_for('static', filename=path.split('static/', 1)[-1]) }}" alt="Image" style="width:200px;height:auto;">
+                    <p>{{ path }}</p>
+                    <p>Similarity: {{ (similarity * 100)|round(2) }}%</p>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>No similar images found.</p>
+        {% endif %}
     </div>
     <a href="/">Upload another image</a>
 </body>

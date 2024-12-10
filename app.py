@@ -1,5 +1,4 @@
-# app.py
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template, jsonify
 import os
 from features import extract_features
 from database import init_db, save_image_features, query_database, get_all_images
@@ -28,8 +27,8 @@ def upload_image():
         # Extract features and save to database
         features = extract_features(filepath)
         save_image_features(filepath, features)
-        # Find similar images
-        similar_images = query_database(features)
+        # Find similar images, excluding the uploaded image
+        similar_images = query_database(features, filepath)
         # Render the template with similar images
         return render_template('similar_images.html', uploaded_image=filepath, similar_images=similar_images)
 
