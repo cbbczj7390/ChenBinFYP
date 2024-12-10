@@ -22,3 +22,12 @@ brew --version
 Next Step: Install MySQL
 Now that Homebrew is set up, install MySQL:
 brew install mysql
+
+
+🚀 Step-by-Step Guide for Object Detection Integration with YOLOv5
+
+We will:
+	1.	Set up YOLOv5 for object detection.
+	2.	Modify your Flask app to detect objects in uploaded images.
+	3.	Display detected objects with bounding boxes.
+	4.	Integrate object detection results with the similarity comparison.
