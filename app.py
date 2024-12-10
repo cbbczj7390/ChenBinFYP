@@ -15,18 +15,21 @@ app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 def index():
     return render_template('index.html')
 
-@app.route('/upload', methods=['POST'])
-def upload_image():
+# Single Image Upload Route
+@app.route('/upload_single', methods=['POST'])
+def upload_single_image():
     if 'file' not in request.files:
         return jsonify({'error': 'No file part'})
+    
     file = request.files['file']
     if file.filename == '':
         return jsonify({'error': 'No selected file'})
+
     if file:
         filepath = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
         file.save(filepath)
 
-        # Detect objects in the uploaded image using YOLOv5
+        # Detect objects in the uploaded image
         detected_objects = detect_objects(filepath, conf_threshold=0.5)
 
         # Extract features for similarity comparison
@@ -35,13 +38,51 @@ def upload_image():
 
         # Find similar images in the database
         similar_images = query_database(features, uploaded_path=filepath)
-        # Render the template with detected objects and similar images
-        return render_template(
-            'similar_images.html',
-            uploaded_image=filepath,
-            similar_images=similar_images,
-            detection_results=detected_objects
-        )
+
+        return render_template('batch_results.html', results=[{
+            'uploaded_image': filepath,
+            'detected_objects': detected_objects,
+            'similar_images': similar_images
+        }])
+
+# Multiple Images Upload Route
+@app.route('/upload_multiple', methods=['POST'])
+@app.route('/upload_multiple', methods=['POST'])
+def upload_multiple_images():
+    if 'files' not in request.files:
+        return jsonify({'error': 'No file part'})
+
+    files = request.files.getlist('files')
+    if not files or all(f.filename == '' for f in files):
+        return jsonify({'error': 'No selected files'})
+
+    results = []
+
+    for file in files:
+        if file:
+            filepath = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
+            file.save(filepath)
+
+            # Detect objects in the uploaded image
+            detected_objects = detect_objects(filepath, conf_threshold=0.5)
+
+            # Extract features for similarity comparison
+            features = extract_features(filepath)
+            save_image_features(filepath, features)
+
+            # Find similar images in the database
+            similar_images = query_database(features, uploaded_path=filepath)
+
+            # Collect results for each image
+            results.append({
+                'uploaded_image': filepath,  # Ensure this key is present
+                'detected_objects': detected_objects,
+                'similar_images': similar_images
+            })
+
+    # Render the template with results for all images
+    return render_template('batch_results.html', results=results)
+
 
 if __name__ == '__main__':
     init_db()
