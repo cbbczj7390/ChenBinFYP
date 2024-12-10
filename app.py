@@ -1,7 +1,7 @@
 from flask import Flask, request, render_template, jsonify
 import os
 from features import extract_features
-from database import init_db, save_image_features, query_database, get_all_images
+from database import init_db, save_image_features, query_database
 
 app = Flask(__name__)
 
@@ -24,11 +24,11 @@ def upload_image():
     if file:
         filepath = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
         file.save(filepath)
-        # Extract features and save to database
+        # Extract features from the uploaded image
         features = extract_features(filepath)
         save_image_features(filepath, features)
-        # Find similar images, excluding the uploaded image
-        similar_images = query_database(features, filepath)
+        # Find similar images in the entire database
+        similar_images = query_database(features, filepath, debug=True)
         # Render the template with similar images
         return render_template('similar_images.html', uploaded_image=filepath, similar_images=similar_images)
 
