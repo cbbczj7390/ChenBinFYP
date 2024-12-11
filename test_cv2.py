@@ -1,3 +1,3 @@
-# test_cv2.py
-import cv2
-print(cv2.__version__)
+# test_flask.py
+from flask import Flask
+print("Flask is installed.")
