@@ -87,11 +87,18 @@
         <div class="upload-section">
             <h4 class="text-center mb-4">Upload a Single Image</h4>
             <form action="/upload_single" method="post" enctype="multipart/form-data">
+                <div class="mb-3">
+                    <label for="modelSelectSingle" class="form-label">Choose a Model:</label>
+                    <select class="form-select" id="modelSelectSingle" name="model">
+                        <option value="yolov5">YOLOv5 (Fast)</option>
+                        <option value="faster_rcnn">Faster R-CNN (Accurate)</option>
+                    </select>
+                </div>
                 <div class="mb-4">
                     <input type="file" class="form-control" name="file" required>
                 </div>
                 <button type="submit" class="btn btn-upload btn-single w-100">
-                    <i class="fas fa-upload"></i>Upload Single Image
+                    <i class="fas fa-upload"></i> Upload Single Image
                 </button>
             </form>
         </div>
@@ -100,11 +107,18 @@
         <div class="upload-section">
             <h4 class="text-center mb-4">Upload Multiple Images</h4>
             <form action="/upload_multiple" method="post" enctype="multipart/form-data">
+                <div class="mb-3">
+                    <label for="modelSelectMultiple" class="form-label">Choose a Model:</label>
+                    <select class="form-select" id="modelSelectMultiple" name="model">
+                        <option value="yolov5">YOLOv5 (Fast)</option>
+                        <option value="faster_rcnn">Faster R-CNN (Accurate)</option>
+                    </select>
+                </div>
                 <div class="mb-4">
                     <input type="file" class="form-control" name="files" multiple required>
                 </div>
                 <button type="submit" class="btn btn-upload btn-multiple w-100">
-                    <i class="fas fa-images"></i>Upload Multiple Images
+                    <i class="fas fa-images"></i> Upload Multiple Images
                 </button>
             </form>
         </div>
