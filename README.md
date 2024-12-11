@@ -24,33 +24,26 @@ First, clone the repository using the following command:
 git clone https://github.com/cbbczj7390/ChenBinFYP.git
 cd ChenBinFYP
 ```
-Install Flask using pip:
-pip install Flask
-
-If your project has a requirements.txt file, you can install all dependencies at once:
-pip install -r requirements.txt
-
-
-
-Step 3: Verify Flask Installation
-pip show Flask
-
-pip install torch
-
-pip install pandas
-
-python3 add_images_to_db.py
-
-
 
 ### 2. Create a Virtual Environment
 Create a virtual environment to manage dependencies:
 
 ```bash
-python3 -m venv .venv
+python3.11 -m venv .venv
 source .venv/bin/activate
 ```
+3. Dependencies Overview
 
+This project requires the following dependencies:
+	•	Python 3.11
+	•	Flask: A lightweight web framework for Python.
+	•	PyTorch: An open-source machine learning library for image recognition tasks.
+	•	TorchVision: Provides datasets, model architectures, and image transformations for computer vision.
+	•	Pillow: Python Imaging Library for image processing.
+	•	OpenCV: Library for computer vision tasks like image reading and manipulation.
+	•	NumPy: For numerical computing and array manipulation.
+	•	TensorFlow: Machine learning framework for model training and inference.
+	
 ### 3. Install Dependencies
 Install the required Python packages using `requirements.txt`:
 
