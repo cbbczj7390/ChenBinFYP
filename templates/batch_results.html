@@ -14,12 +14,19 @@
             font-family: 'Roboto', sans-serif;
             color: #444;
         }
+        .container {
+            max-width: 1200px;
+        }
         .section-card {
-            background-color: #fff;
+            background-color: #ffffff;
             border-radius: 15px;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
-            padding: 30px;
+            padding: 40px;
             margin-bottom: 40px;
+            transition: transform 0.3s;
+        }
+        .section-card:hover {
+            transform: translateY(-5px);
         }
         .uploaded-image-container {
             max-width: 300px;
@@ -27,36 +34,34 @@
         }
         .uploaded-image {
             width: 100%;
-            height: 200px;
+            height: auto;
             object-fit: contain;
             border-radius: 15px;
+            border: 3px solid #ddd;
         }
         .section-heading {
             font-weight: 700;
             font-size: 1.75rem;
-            color: #555;
+            color: #333;
             margin-bottom: 20px;
             text-align: center;
-        }
-        .detected-object-list {
-            max-width: 600px;
-            margin: 0 auto 20px;
         }
         .detected-object-list li {
             background-color: #e9f7ef;
             border-left: 5px solid #28a745;
             margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-radius: 5px;
         }
-        .similarity-badge {
-            background-color: #17a2b8;
+        .badge-confidence {
+            font-size: 0.9rem;
+            padding: 5px 10px;
+            background-color: #28a745;
             color: #fff;
-        }
-        .btn-back {
-            background-color: #6c757d;
-            color: #fff;
-        }
-        .btn-back:hover {
-            background-color: #5a6268;
+            border-radius: 5px;
         }
         .similar-images-section {
             display: flex;
@@ -65,13 +70,17 @@
             gap: 20px;
         }
         .similar-image-card {
-            background: #fafafa;
+            background: #ffffff;
             border: 1px solid #ddd;
             border-radius: 10px;
             padding: 15px;
             width: 250px;
             text-align: center;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s;
+        }
+        .similar-image-card:hover {
+            transform: translateY(-5px);
         }
         .similar-image {
             width: 100%;
@@ -84,12 +93,26 @@
             margin-top: 10px;
             font-weight: 500;
         }
+        .btn-group {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 30px;
+        }
+        .btn-primary {
+            background-color: #007bff;
+            color: white;
+        }
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+        }
     </style>
 </head>
 <body class="d-flex flex-column min-vh-100">
 
     <!-- Navbar -->
-    <nav class="navbar navbar-dark bg-dark">
+    <nav class="navbar navbar-dark bg-dark shadow">
         <div class="container">
             <a class="navbar-brand" href="/">Image Recognition App</a>
         </div>
@@ -109,24 +132,26 @@
 
             <!-- Detected Objects Section -->
             <h3 class="section-heading">Detected Objects</h3>
-            {% if not result.detected_objects.empty %}
+            {% set filtered_objects = result.detected_objects | selectattr('confidence', '>', 0.8) | list %}
+            {% if filtered_objects %}
                 <ul class="list-group detected-object-list">
-                    {% for obj in result.detected_objects %}
-                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                    {% for obj in filtered_objects %}
+                    <li class="list-group-item">
                         <strong>{{ obj['name'] | default('Unknown') }}</strong>
-                        <span class="badge bg-success">{{ (obj['confidence'] * 100) | round(2) }}%</span>
+                        <span class="badge-confidence">{{ (obj['confidence'] * 100) | round(2) }}%</span>
                     </li>
-                {% endfor %}
+                    {% endfor %}
                 </ul>
             {% else %}
-                <p class="text-center text-muted">No objects detected.</p>
+                <p class="text-center text-muted">No objects detected with confidence > 80%.</p>
             {% endif %}
 
             <!-- Similar Images Section -->
             <h3 class="section-heading">Similar Pictures</h3>
-            {% if result.similar_images %}
+            {% set high_confidence_similar_images = result.similar_images | selectattr('1', '>', 0.7) | list %}
+            {% if high_confidence_similar_images %}
             <div class="similar-images-section">
-                {% for path, similarity in result.similar_images %}
+                {% for path, similarity in high_confidence_similar_images[:8] %}
                     <div class="similar-image-card">
                         <img src="{{ url_for('static', filename=path.split('static/')[1]) }}" class="similar-image" alt="Similar Image">
                         <p>
@@ -139,13 +164,15 @@
                 {% endfor %}
             </div>
             {% else %}
-                <p class="text-center text-muted">No similar images found.</p>
+                <p class="text-center text-muted">No similar images found with similarity > 70%.</p>
             {% endif %}
         </div>
         {% endfor %}
 
-        <div class="text-center mt-4">
-            <a href="/" class="btn btn-back btn-lg">Upload More Images</a>
+        <!-- Buttons -->
+        <div class="btn-group">
+            <a href="/" class="btn btn-secondary btn-lg">Return to Home</a>
+            <a href="/" class="btn btn-primary btn-lg">Upload More Images</a>
         </div>
     </div>
 

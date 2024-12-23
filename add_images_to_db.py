@@ -20,7 +20,12 @@ def add_images_from_directory(directory):
                 try:
                     print(f"Processing: {img_path}")
                     features = extract_features(img_path)
-                    save_image_features(img_path, features)
+                    
+                    # No object detection for these images, so use empty tags
+                    tags = []
+
+                    # Save image features with empty tags
+                    save_image_features(img_path, features, tags)
                     print(f"Added: {img_path}")
                 except Exception as e:
                     print(f"Error processing {img_path}: {e}")
