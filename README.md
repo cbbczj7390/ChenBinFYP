@@ -112,3 +112,16 @@ We will:
 	2.	Modify your Flask app to detect objects in uploaded images.
 	3.	Display detected objects with bounding boxes.
 	4.	Integrate object detection results with the similarity comparison.
+
+
+
+
+
+TAKE NOTE!!! IMPORTANT !
+IF ANY ISSUES WITH THE TENSOR FLOW - please run the following
+
+	rm -rf /Users/chenbin/desktop/FYP_CB/ChenBinFYP/venv/
+	python3.11 -m venv /Users/chenbin/desktop/FYP_CB/ChenBinFYP/venv/
+	source /Users/chenbin/desktop/FYP_CB/ChenBinFYP/venv/bin/activate
+	pip install --upgrade pip setuptools wheel
+	pip install -r requirements.txt
