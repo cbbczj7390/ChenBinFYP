@@ -48,6 +48,7 @@ This project requires the following dependencies:
 Install the required Python packages using `requirements.txt`:
 
 ```bash
+pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
