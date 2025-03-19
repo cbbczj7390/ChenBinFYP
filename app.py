@@ -138,10 +138,14 @@ def search():
     """
     query = request.args.get('query', '').strip()
     if not query:
-        return jsonify({'error': 'No search query provided'})
+        return jsonify({'error': 'No search query provided'}), 400
 
     results = search_by_keyword(query)
-    return render_template('search_results.html', results=results, query=query)
+
+    if not results:
+        return jsonify({'message': f"No results found for '{query}'"}), 200
+
+    return jsonify({'results': results})
 
 @app.route('/update_tags', methods=['POST'])
 def update_tags():
