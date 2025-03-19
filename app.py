@@ -1,6 +1,7 @@
 from flask import Flask, request, render_template, jsonify
 import os
 import pandas as pd
+from werkzeug.utils import secure_filename
 from features import extract_features
 from database import (
     save_image_features,
@@ -18,6 +19,15 @@ app = Flask(__name__)
 UPLOAD_FOLDER = os.path.join('static', 'uploads')
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+# Allowed image file extensions
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
+
+def allowed_file(filename):
+    """
+    Checks if the uploaded file has a valid image extension.
+    """
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 def remove_duplicates(detections):
     """
@@ -52,28 +62,30 @@ def upload_single_image():
 
     if file.filename == '':
         return jsonify({'error': 'No selected file'})
+    
+    if not allowed_file(file.filename):
+        return jsonify({'error': 'Invalid file format. Only images are allowed.'})
 
-    if file:
-        filepath = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
-        file.save(filepath)
+    filepath = os.path.join(app.config['UPLOAD_FOLDER'], secure_filename(file.filename))
+    file.save(filepath)
 
-        # Detect objects and generate tags
-        detected_objects = detect_objects(filepath, model_type=model_type, conf_threshold=0.5)
-        detected_objects = remove_duplicates(detected_objects)
-        tags = [obj['name'] for obj in detected_objects]
+    # Detect objects and generate tags
+    detected_objects = detect_objects(filepath, model_type=model_type, conf_threshold=0.5)
+    detected_objects = remove_duplicates(detected_objects)
+    tags = [obj['name'] for obj in detected_objects]
 
-        # Extract features and save to database with tags
-        features = extract_features(filepath)
-        save_image_features(filepath, features, tags)
+    # Extract features and save to database with tags
+    features = extract_features(filepath)
+    save_image_features(filepath, features, tags)
 
-        similar_images = query_database(features, uploaded_path=filepath)
+    similar_images = query_database(features, uploaded_path=filepath)
 
-        return render_template('batch_results.html', results=[{
-            'uploaded_image': filepath,
-            'detected_objects': detected_objects,
-            'tags': tags,
-            'similar_images': similar_images
-        }])
+    return render_template('batch_results.html', results=[{
+        'uploaded_image': filepath,
+        'detected_objects': detected_objects,
+        'tags': tags,
+        'similar_images': similar_images
+    }])
 
 @app.route('/upload_multiple', methods=['POST'])
 def upload_multiple_images():
@@ -93,8 +105,8 @@ def upload_multiple_images():
     results = []
 
     for file in files:
-        if file:
-            filepath = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
+        if file and allowed_file(file.filename):
+            filepath = os.path.join(app.config['UPLOAD_FOLDER'], secure_filename(file.filename))
             file.save(filepath)
 
             # Detect objects and generate tags
@@ -114,6 +126,8 @@ def upload_multiple_images():
                 'tags': tags,
                 'similar_images': similar_images
             })
+        else:
+            return jsonify({'error': 'One or more files have an invalid format. Only images are allowed.'})
 
     return render_template('batch_results.html', results=results)
 
