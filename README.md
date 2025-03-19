@@ -48,6 +48,7 @@ This project requires the following dependencies:
 Install the required Python packages using `requirements.txt`:
 
 ```bash
+pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
@@ -120,6 +121,30 @@ We will:
 TAKE NOTE!!! IMPORTANT !
 IF ANY ISSUES WITH THE TENSOR FLOW - please run the following
 
+# Setup and Execution (SOE) Guide
+
+## 1️⃣ Setting Up the Virtual Environment
+
+Run the following commands in the terminal:
+
+```sh
+# Remove any existing virtual environment (optional)
+rm -rf venv/
+
+# Create a new virtual environment
+python3 -m venv venv
+
+# Activate the virtual environment
+source venv/bin/activate  # macOS/Linux
+venv\Scripts\activate     # Windows
+
+# Upgrade pip, setuptools, and wheel
+pip install --upgrade pip setuptools wheel
+
+# Install required dependencies
+pip install -r requirements.txt
+
+	`` EXAMPLE USED ON MY PROGRAM
 	rm -rf /Users/chenbin/desktop/FYP_CB/ChenBinFYP/venv/
 	python3.11 -m venv /Users/chenbin/desktop/FYP_CB/ChenBinFYP/venv/
 	source /Users/chenbin/desktop/FYP_CB/ChenBinFYP/venv/bin/activate
